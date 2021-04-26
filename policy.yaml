@@ -1,0 +1,27 @@
+vars:
+  metrics-filters: &metrics-filter
+        type: metrics
+        name: DatabaseConnections
+        days: 14
+        value: 0
+        op: equal
+
+policies:
+  - name: unused_elb
+    resource: elb
+    description: |
+     Find any ELB with no instances attached for deletion in 14 days.
+    filters:
+        - Instances: []
+  - name: unused_rds
+    resource: rds
+    description: |
+      Take the average number of connections over 14 days for databases that are greater than 14
+      days old
+    filters:
+      - type: value
+        value_type: age
+        key: InstanceCreateTime
+        value: 14
+        op: greater-than
+      - <<: *metrics-filter
