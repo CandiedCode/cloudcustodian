@@ -1,18 +1,16 @@
-vars:
-  metrics-filters: &metrics-filter
-        type: metrics
-        name: DatabaseConnections
-        days: 14
-        value: 0
-        op: equal
-
 policies:
+  - name: unused_ebs
+    resource: ebs
+    description: |
+      Find any EBS volumes that are not attached
+    filters:
+      - Instances: []
   - name: unused_elb
     resource: elb
     description: |
-     Find any ELB with no instances attached for deletion in 14 days.
+      Find any ELB with no instances attached for deletion in 14 days.
     filters:
-        - Instances: []
+      - Instances: []
   - name: unused_rds
     resource: rds
     description: |
@@ -24,4 +22,52 @@ policies:
         key: InstanceCreateTime
         value: 14
         op: greater-than
-      - <<: *metrics-filter
+      - type: metrics
+        name: DatabaseConnections
+        days: 14
+        value: 0
+        op: equal
+  - name: unused_kinesis
+    resource: kinesis
+    description: |
+      Find kinesis streams without any put or get requests in last 14 days
+    filters:
+      - type: metrics
+        name: IncomingRecords
+        statistics: Sum
+        days: 14
+        value: 0
+        missing-value: 0
+        op: equal
+      - type: metrics
+        name: OutgoingRecords
+        statistics: Sum
+        days: 14
+        value: 0
+        missing-value: 0
+        op: equal
+  - name: unused_firehose
+    resource: firehose
+    description: |
+      Find kinesis firehose streams without any put or get requests in last 14 days
+    filters:
+      - type: metrics
+        name: IncomingRecords
+        statistics: Sum
+        days: 14
+        value: 0
+        missing-value: 0
+        op: equal
+      - type: metrics
+        name: OutgoingRecords
+        statistics: Sum
+        days: 14
+        value: 0
+        missing-value: 0
+        op: equal
+  - name: unused_security-group
+    resource: security-group
+    description: |
+      Retrieve unused security groups
+    filters:
+      - unused 

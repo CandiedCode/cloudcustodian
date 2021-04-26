@@ -1,5 +1,5 @@
-AWS_DEFAULT_REGION ?= 'us-west-2'
-AWS_PROFILE ?= 'PECN_DEV-DevOps'
+AWS_DEFAULT_REGION ?=us-west-2
+AWS_PROFILE ?=PECN_DEV-DevOps
 
 .PHONY: run
 run:
